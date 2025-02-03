@@ -177,12 +177,12 @@ func _physics_process(delta: float) -> void:
 			
 				if Input.get_axis(\"move_up\",\"move_down\") >0:
 					dirUD=\"d\"
-					dirTest.y=1
+					dirTest.y=-1
 					if Input.get_axis(\"move_left\",\"move_right\") ==0:
 						dirTest.x =0
 				elif Input.get_axis(\"move_up\",\"move_down\") <0:
 					dirUD =\"u\"
-					dirTest.y=-1
+					dirTest.y=1
 					if Input.get_axis(\"move_left\",\"move_right\") ==0:
 						dirTest.x =0
 				
@@ -190,6 +190,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		mv=\"S\"
 	direction = mv+dirLR+dirUD
+	print(dirTest)
 func _process(delta):
 	pass
 	# Get the input direction and handle the movement/deceleration.
@@ -292,7 +293,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_60clr"]
+[sub_resource type="Shader" id="Shader_qyhkc"]
 code = "shader_type spatial;
 
 
@@ -335,20 +336,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_440pj"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2djel"]
 render_priority = 0
-shader = SubResource("Shader_60clr")
+shader = SubResource("Shader_qyhkc")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_1414i"]
+[sub_resource type="QuadMesh" id="QuadMesh_0jifw"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_440pj")
+material = SubResource("ShaderMaterial_2djel")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_pm1bj"]
+[sub_resource type="Shader" id="Shader_t6ytf"]
 code = "shader_type spatial;
 
 
@@ -391,17 +392,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4waxt"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_37rwe"]
 render_priority = 0
-shader = SubResource("Shader_pm1bj")
+shader = SubResource("Shader_t6ytf")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_ljlj4"]
+[sub_resource type="QuadMesh" id="QuadMesh_8virc"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_4waxt")
+material = SubResource("ShaderMaterial_37rwe")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -491,12 +492,12 @@ func _physics_process(delta: float) -> void:
 		
 				if Input.get_axis(\"punch_up\",\"punch_down\") >0:
 					dirUD=\"d\"
-					dirTest.y = 1
+					dirTest.y = -1
 					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
 						dirTest.x = 0
 				elif Input.get_axis(\"punch_up\",\"punch_down\") <0:
 					dirUD =\"u\"
-					dirTest.y = -1
+					dirTest.y = 1
 					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
 						dirTest.x = 0
 				else:
@@ -618,7 +619,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_1414i")
+mesh = SubResource("QuadMesh_0jifw")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -628,7 +629,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_ljlj4")
+mesh = SubResource("QuadMesh_8virc")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
