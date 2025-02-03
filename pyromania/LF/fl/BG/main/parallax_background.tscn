@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=3 uid="uid://dekb82vpbl7eu"]
+
+[ext_resource type="Script" path="res://LF/fl/BG/main/parallax_background.gd" id="1_ka2ft"]
+[ext_resource type="Texture2D" uid="uid://bv3lfvm36thls" path="res://Рисую/BGS/BG0.png" id="2_snv3e"]
+[ext_resource type="Texture2D" uid="uid://btynlcjacb52o" path="res://Рисую/BGS/BG1.png" id="3_r47w0"]
+[ext_resource type="Texture2D" uid="uid://ciq5s5iwslv4s" path="res://Рисую/BGS/BG2.png" id="4_7i05u"]
+[ext_resource type="Texture2D" uid="uid://eqnkdx2ji7u3" path="res://Рисую/BGS/BG3.png" id="5_ebar6"]
+
+[node name="ParallaxBackground" type="ParallaxBackground"]
+scroll_limit_begin = Vector2(3000, 3000)
+scroll_limit_end = Vector2(3000, 3000)
+scroll_ignore_camera_zoom = true
+script = ExtResource("1_ka2ft")
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="."]
+texture_repeat = 3
+motion_mirroring = Vector2(1079.96, 607.495)
+
+[node name="Bg0" type="Sprite2D" parent="ParallaxLayer"]
+texture_repeat = 3
+position = Vector2(576, 324)
+scale = Vector2(36, 20.25)
+texture = ExtResource("2_snv3e")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="."]
+texture_repeat = 3
+motion_scale = Vector2(-2.698, 0.969)
+motion_mirroring = Vector2(1078.81, 607.495)
+
+[node name="Bg1" type="Sprite2D" parent="ParallaxLayer2"]
+texture_filter = 1
+texture_repeat = 3
+position = Vector2(576, 324)
+scale = Vector2(36, 20.25)
+texture = ExtResource("3_r47w0")
+
+[node name="Label3" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="."]
+texture_repeat = 3
+motion_mirroring = Vector2(1114.81, 625.73)
+
+[node name="Bg2" type="Sprite2D" parent="ParallaxLayer3"]
+auto_translate_mode = 2
+texture_filter = 1
+texture_repeat = 3
+position = Vector2(576, 324)
+scale = Vector2(36, 20.25)
+texture = ExtResource("4_7i05u")
+
+[node name="Label2" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ParallaxLayer4" type="ParallaxLayer" parent="."]
+texture_repeat = 3
+motion_mirroring = Vector2(1152, 648)
+
+[node name="Bg3" type="Sprite2D" parent="ParallaxLayer4"]
+texture_filter = 1
+texture_repeat = 3
+position = Vector2(576, 324)
+scale = Vector2(36, 20.25)
+texture = ExtResource("5_ebar6")
+
+[connection signal="ready" from="." to="." method="_on_ready"]

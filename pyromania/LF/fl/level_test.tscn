@@ -1,0 +1,411 @@
+[gd_scene load_steps=40 format=3 uid="uid://r3lyx7r3ifpo"]
+
+[ext_resource type="Script" path="res://LF/fl/camera_2d.gd" id="3_hcycx"]
+[ext_resource type="Texture2D" uid="uid://bv3lfvm36thls" path="res://Рисую/BGS/BG0.png" id="4_d58sf"]
+[ext_resource type="Texture2D" uid="uid://cdsos6ag285r5" path="res://Рисую/тэст/FBGPP.png" id="5_trnha"]
+[ext_resource type="Script" path="res://LF/fl/player_f_2.gd" id="6_54g8l"]
+[ext_resource type="Texture2D" uid="uid://dj4v0yqvg1nif" path="res://Рисую/тэст/CloseBG.png" id="6_ikvs5"]
+[ext_resource type="Texture2D" uid="uid://8sy535fhrj6i" path="res://Рисую/Tiles/Tilemap.png" id="6_segji"]
+[ext_resource type="Texture2D" uid="uid://kpsmatf7efv1" path="res://Рисую/chars/character.png" id="6_y44t5"]
+[ext_resource type="Script" path="res://LF/fl/Mobs/CharF/rigid_body_2d.gd" id="7_on7lq"]
+[ext_resource type="Script" path="res://LF/fl/area_2d.gd" id="8_4ovoo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y3b86"]
+size = Vector2(95.5, 574.5)
+
+[sub_resource type="GDScript" id="GDScript_8cogk"]
+script/source = "extends Parallax2D
+
+var previous_position: Vector2
+var parallax_speed: Vector2 = Vector2.ZERO
+@export var layer:int = 2
+@export var amx :float =2
+@export var amy :float =2
+@export var coh:float =0
+@export var cov:float =0
+@export var cm :float =1
+@export var hnl :bool = false
+func _ready():
+	previous_position = global_position
+func _process(delta: float) -> void:
+	var current_position = global_position
+	parallax_speed = (current_position - previous_position) / delta  # Вычисляем скорость
+	previous_position = current_position  # Обновляем предыдущую позицию
+	for child in self.get_children():
+		if child.name==\"Player\" and hnl== true:
+			 # Индекс текущего слоя
+			for i in range(self.get_parent().get_child_count()):
+				var bro = self.get_parent().get_child(i)
+				if bro is Parallax2D and i > self.get_parent().get_children().find(self):  # Слои выше self скрыть
+					bro.visible = false
+"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f6vr7"]
+texture = ExtResource("6_segji")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_bb2my"]
+physics_layer_0/collision_layer = 2
+physics_layer_0/collision_mask = 2
+sources/0 = SubResource("TileSetAtlasSource_f6vr7")
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_nkxh2"]
+friction = 0.37
+absorbent = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yunuc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crrxm"]
+size = Vector2(32, 85)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlxnc"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipe2k"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 288, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mnlbu"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 96, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j3a58"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ae5h"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_khfbp"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(48, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oj0c8"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(96, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qi3oy"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(144, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ndy8j"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(96, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q4i7v"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(48, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ne5mg"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 288, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_28imu"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 96, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1jhkv"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(0, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iqu1q"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(48, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ol384"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(96, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cr1q0"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(144, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4twm"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(96, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q33fa"]
+atlas = ExtResource("6_y44t5")
+region = Rect2(48, 0, 48, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ylcbs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jlxnc")
+}],
+"loop": true,
+"name": &"Sf",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ipe2k")
+}],
+"loop": true,
+"name": &"Sl",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mnlbu")
+}],
+"loop": true,
+"name": &"Sr",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j3a58")
+}],
+"loop": true,
+"name": &"St",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5ae5h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_khfbp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oj0c8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qi3oy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ndy8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q4i7v")
+}],
+"loop": true,
+"name": &"Wf",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ne5mg")
+}],
+"loop": true,
+"name": &"Wl",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_28imu")
+}],
+"loop": true,
+"name": &"Wr",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1jhkv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iqu1q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ol384")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cr1q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h4twm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q33fa")
+}],
+"loop": true,
+"name": &"Wt",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_t8hkb"]
+script/source = "extends Parallax2D
+
+var previous_position: Vector2
+var parallax_speed: Vector2 = Vector2.ZERO
+@export var layer:int = 2
+@export var amx :float =2
+@export var amy :float =2
+@export var coh:float =0
+@export var cov:float =0
+@export var cm :float =1
+@export var hnl :bool = false
+func _ready():
+	previous_position = global_position
+func _process(delta: float) -> void:
+	var current_position = global_position
+	parallax_speed = (current_position - previous_position) / delta  # Вычисляем скорость
+	previous_position = current_position  # Обновляем предыдущую позицию
+	for child in self.get_children():
+		if child.name==\"Player\" and hnl== true:
+			 # Индекс текущего слоя
+			for i in range(self.get_parent().get_child_count()):
+				var bro = self.get_parent().get_child(i)
+				if bro is Parallax2D and i > self.get_parent().get_children().find(self):  # Слои выше self скрыть
+					bro.visible = false
+"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_x2en3"]
+texture = ExtResource("6_segji")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_ojc7f"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_x2en3")
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_u5esc"]
+friction = 0.19
+absorbent = true
+
+[node name="LevelTest" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(707, 380)
+scale = Vector2(0.5, 0.5)
+limit_smoothed = true
+position_smoothing_enabled = true
+drag_left_margin = 0.3
+drag_top_margin = 0.3
+drag_right_margin = 0.3
+drag_bottom_margin = 0.3
+editor_draw_limits = true
+editor_draw_drag_margin = true
+script = ExtResource("3_hcycx")
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+script = ExtResource("8_4ovoo")
+target_position = Vector2(1016, 398)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(1488, 1030)
+shape = SubResource("RectangleShape2D_y3b86")
+
+[node name="Other BG" type="Node2D" parent="."]
+
+[node name="Parallax2D" type="Parallax2D" parent="Other BG"]
+z_index = -100
+scroll_scale = Vector2(0.1, 0.1)
+repeat_size = Vector2(884, 556)
+repeat_times = 3
+
+[node name="Bg0" type="Sprite2D" parent="Other BG/Parallax2D"]
+z_index = -100
+position = Vector2(442, 278)
+scale = Vector2(27.625, 17.375)
+texture = ExtResource("4_d58sf")
+
+[node name="Parallax2D4" type="Parallax2D" parent="Other BG"]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.5, 0.5)
+script = SubResource("GDScript_8cogk")
+
+[node name="Fbgpp" type="Sprite2D" parent="Other BG/Parallax2D4"]
+position = Vector2(946, 737)
+scale = Vector2(40, 32.125)
+texture = ExtResource("5_trnha")
+
+[node name="TileMap" type="TileMap" parent="Other BG/Parallax2D4"]
+position = Vector2(626, 546)
+scale = Vector2(4, 4)
+tile_set = SubResource("TileSet_bb2my")
+format = 2
+layer_0/tile_data = PackedInt32Array(262144, 0, 0, 262145, 65536, 0, 262146, 0, 0, 262147, 65536, 0, 262148, 0, 0, 262149, 65536, 0, 262150, 0, 0, 262151, 65536, 0, 262152, 0, 0, 262153, 65536, 0, 0, 0, 0, 1, 65536, 0, 2, 0, 0, 3, 65536, 0, 4, 0, 0, 5, 65536, 0, 6, 0, 0, 7, 65536, 0, 8, 0, 0, 9, 65536, 0, -65527, 0, 0, -131063, 0, 0, -196599, 0, 0, -262135, 0, 0, -327671, 0, 0, -393207, 0, 0)
+
+[node name="EnemyF2" type="RigidBody2D" parent="Other BG/Parallax2D4"]
+position = Vector2(984, 718)
+collision_layer = 2
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_nkxh2")
+gravity_scale = 0.0
+lock_rotation = true
+linear_damp = 10.755
+script = ExtResource("6_54g8l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Other BG/Parallax2D4/EnemyF2"]
+position = Vector2(0, -1)
+scale = Vector2(1.955, 0.81)
+shape = SubResource("RectangleShape2D_yunuc")
+
+[node name="CollisionShapePlatformer" type="CollisionShape2D" parent="Other BG/Parallax2D4/EnemyF2"]
+position = Vector2(0, -42.5)
+shape = SubResource("RectangleShape2D_crrxm")
+disabled = true
+
+[node name="AnimatedSprite2DTC" type="AnimatedSprite2D" parent="Other BG/Parallax2D4/EnemyF2"]
+y_sort_enabled = true
+position = Vector2(0, -39)
+sprite_frames = SubResource("SpriteFrames_ylcbs")
+animation = &"St"
+autoplay = "Wt"
+
+[node name="Parallax2D3" type="Parallax2D" parent="Other BG"]
+script = SubResource("GDScript_t8hkb")
+layer = 1
+cm = 2.0
+
+[node name="CloseBg" type="Sprite2D" parent="Other BG/Parallax2D3"]
+position = Vector2(482, 521)
+scale = Vector2(28.8125, 7.5625)
+texture = ExtResource("6_ikvs5")
+
+[node name="TileMap" type="TileMap" parent="Other BG/Parallax2D3"]
+scale = Vector2(4, 4)
+tile_set = SubResource("TileSet_ojc7f")
+format = 2
+layer_0/tile_data = PackedInt32Array(589829, 65536, 0, 589830, 0, 0, 589824, 0, 0, 589825, 65536, 0, 589828, 0, 0, 589831, 65536, 0, 589832, 0, 0, 589833, 65536, 0, 589834, 0, 0, 589835, 65536, 0, 589836, 0, 0, 589837, 65536, 0, 655358, 0, 0, 655359, 65536, 0, 655356, 0, 0, 655357, 65536, 0, 655354, 0, 0, 655355, 65536, 0, 655352, 0, 0, 655353, 65536, 0, 655350, 0, 0, 655351, 65536, 0, 655348, 65536, 0, 655349, 65536, 0, 655347, 0, 0, 655345, 0, 0, 655346, 65536, 0, 655343, 0, 0, 655344, 65536, 0, 589838, 0, 0, -131058, 0, 0, -65522, 0, 0, 14, 0, 0, 65550, 0, 0, 131086, 0, 0, 196622, 0, 0, 262158, 0, 0, 327694, 0, 0, 393230, 0, 0, 458766, 0, 0, 524302, 0, 0, 131085, 0, 0, 131084, 0, 0)
+
+[node name="Player" type="RigidBody2D" parent="Other BG/Parallax2D3"]
+position = Vector2(336, 388)
+collision_layer = 2
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_u5esc")
+gravity_scale = 0.0
+lock_rotation = true
+script = ExtResource("7_on7lq")
+SPEEDTF = 160.0
+SPEEDLR = 200.0
+Force_x = 1.0
+Force_y = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Other BG/Parallax2D3/Player"]
+position = Vector2(0, -1)
+scale = Vector2(1.955, 0.81)
+shape = SubResource("RectangleShape2D_yunuc")
+
+[node name="CollisionShapePlatformer" type="CollisionShape2D" parent="Other BG/Parallax2D3/Player"]
+position = Vector2(0, -42.5)
+shape = SubResource("RectangleShape2D_crrxm")
+disabled = true
+
+[node name="AnimatedSprite2DTC" type="AnimatedSprite2D" parent="Other BG/Parallax2D3/Player"]
+y_sort_enabled = true
+position = Vector2(0, -39)
+sprite_frames = SubResource("SpriteFrames_ylcbs")
+animation = &"St"
+autoplay = "Wt"
+
+[connection signal="body_entered" from="Area2D" to="Area2D" method="_on_body_entered"]
