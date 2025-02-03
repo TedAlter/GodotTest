@@ -89,7 +89,6 @@ friction = 0.0
 [sub_resource type="GDScript" id="GDScript_0uh00"]
 script/source = "extends RigidBody3D
 
-
 @export var Force:float = 80.0
 @export var SPEED:float = 80.0
 @export var ip: bool = false
@@ -281,7 +280,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_gq7d0"]
+[sub_resource type="Shader" id="Shader_0xc1y"]
 code = "shader_type spatial;
 
 
@@ -324,20 +323,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7n33i"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gtec"]
 render_priority = 0
-shader = SubResource("Shader_gq7d0")
+shader = SubResource("Shader_0xc1y")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_ma225"]
+[sub_resource type="QuadMesh" id="QuadMesh_glv3t"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_7n33i")
+material = SubResource("ShaderMaterial_8gtec")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_r8thm"]
+[sub_resource type="Shader" id="Shader_m2vm7"]
 code = "shader_type spatial;
 
 
@@ -380,17 +379,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qmicp"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kgp8u"]
 render_priority = 0
-shader = SubResource("Shader_r8thm")
+shader = SubResource("Shader_m2vm7")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_5bd3l"]
+[sub_resource type="QuadMesh" id="QuadMesh_h14fy"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_qmicp")
+material = SubResource("ShaderMaterial_kgp8u")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -611,7 +610,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_ma225")
+mesh = SubResource("QuadMesh_glv3t")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -621,7 +620,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_5bd3l")
+mesh = SubResource("QuadMesh_h14fy")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
