@@ -1,8 +1,9 @@
-[gd_scene load_steps=33 format=3 uid="uid://cehvjck3c6fxw"]
+[gd_scene load_steps=34 format=3 uid="uid://cehvjck3c6fxw"]
 
 [ext_resource type="Texture2D" uid="uid://cxup38cuyaqma" path="res://Рисую/chars/characterD.png" id="1_kfv6r"]
 [ext_resource type="Texture2D" uid="uid://cusekmgew550n" path="res://Рисую/тэст/MMFBG.png" id="1_ndugl"]
 [ext_resource type="Texture2D" uid="uid://b6jndudqqm7wv" path="res://Рисую/chars/character.png" id="1_tv438"]
+[ext_resource type="Script" path="res://LF/Level3D/controle_module.gd" id="3_lsjio"]
 [ext_resource type="Texture2D" uid="uid://dj4v0yqvg1nif" path="res://Рисую/тэст/CloseBG.png" id="4_q1gdx"]
 [ext_resource type="PackedScene" uid="uid://chy8tm6hvummq" path="res://addons/progress_bar_3d/progress_bar_3d.tscn" id="5_x6xwp"]
 
@@ -92,7 +93,6 @@ script/source = "extends RigidBody3D
 @export var Force:float = 80.0
 @export var SPEED:float = 80.0
 @export var ip: bool = false
-@export var cont = true
 @export var MaxHealth: float = 10
 @export var HealEffect: float = 1
 @export var stamina: float = 10
@@ -100,17 +100,15 @@ script/source = "extends RigidBody3D
 var is_stuned = false
 var CurrentStamina = 0
 var CurrentHealth = 0
-var direction=\"Srd\"
 var target_angle = 0
 
 
 @onready var StunTimer: Timer = $StanTimer
+@onready var brain: Node3D = $ControleModule
 
 var nd = Vector2.ZERO
 var ndr = Vector2.ZERO
 var mv = \"S\"
-var dirLR = \"r\"
-var dirUD = \"d\"
 var dirTest: Vector2 = Vector2(1,1)
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -121,10 +119,10 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _integrate_forces(state: PhysicsDirectBodyState) -> void:
 func _physics_process(delta: float) -> void:
-	if cont and ip:
-		linear_velocity.x = Input.get_axis(\"pl\",\"pr\") * SPEED
-	elif cont and not ip:
-		nd = Vector2(Input.get_axis(\"move_left\",\"move_right\"),Input.get_axis(\"move_up\",\"move_down\")).normalized()
+	if ip:
+		linear_velocity.x = brain.dirplatformer * SPEED
+	elif not ip:
+		nd = brain.dirTest.normalized()
 		linear_velocity.x = nd.x * SPEED
 		linear_velocity.z = nd.y * SPEED
 		if nd.length() > 0:
@@ -153,44 +151,34 @@ func _physics_process(delta: float) -> void:
 	else:
 		is_stuned = false
 		
-	if cont:
-		mv=\"W\"
-		if ip:
-			dirUD =\"s\"
-			if Input.get_axis(\"pl\",\"pr\") >0:
-				dirLR=\"r\"
-			elif Input.get_axis(\"pl\",\"pr\") <0:
-				dirLR =\"l\"
-		else:
-			if Input.get_axis(\"move_left\",\"move_right\")!=0 or Input.get_axis(\"move_up\",\"move_down\")!=0:
-				if Input.get_axis(\"move_left\",\"move_right\") >0:
-					dirLR=\"r\"
-					dirTest.x = 1
-					if Input.get_axis(\"move_up\",\"move_down\") ==0:
-						dirTest.y=0
-				elif Input.get_axis(\"move_left\",\"move_right\") <0:
-					dirLR =\"l\"
-					dirTest.x = -1
-					if Input.get_axis(\"move_up\",\"move_down\") ==0:
-						dirTest.y=0
+	mv=\"W\"
+	if ip:
+		if Input.get_axis(\"pl\",\"pr\") >0:
+			dirTest.x = 1
+		elif Input.get_axis(\"pl\",\"pr\") <0:
+			dirTest.x = 1
+	else:
+		if Input.get_axis(\"move_left\",\"move_right\")!=0 or Input.get_axis(\"move_up\",\"move_down\")!=0:
+			if Input.get_axis(\"move_left\",\"move_right\") >0:
+				dirTest.x = 1
+				if Input.get_axis(\"move_up\",\"move_down\") ==0:
+					dirTest.y=0
+			elif Input.get_axis(\"move_left\",\"move_right\") <0:
+				dirTest.x = -1
+				if Input.get_axis(\"move_up\",\"move_down\") ==0:
+					dirTest.y=0
 				
 			
-				if Input.get_axis(\"move_up\",\"move_down\") >0:
-					dirUD=\"d\"
-					dirTest.y=-1
-					if Input.get_axis(\"move_left\",\"move_right\") ==0:
-						dirTest.x =0
-				elif Input.get_axis(\"move_up\",\"move_down\") <0:
-					dirUD =\"u\"
-					dirTest.y=1
-					if Input.get_axis(\"move_left\",\"move_right\") ==0:
-						dirTest.x =0
+			if Input.get_axis(\"move_up\",\"move_down\") >0:
+				dirTest.y=-1
+				if Input.get_axis(\"move_left\",\"move_right\") ==0:
+					dirTest.x =0
+			elif Input.get_axis(\"move_up\",\"move_down\") <0:
+				dirTest.y=1
+				if Input.get_axis(\"move_left\",\"move_right\") ==0:
+					dirTest.x =0
 				
 		
-	else:
-		mv=\"S\"
-	direction = mv+dirLR+dirUD
-	print(dirTest)
 func _process(delta):
 	pass
 	# Get the input direction and handle the movement/deceleration.
@@ -293,7 +281,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_qyhkc"]
+[sub_resource type="Shader" id="Shader_gq7d0"]
 code = "shader_type spatial;
 
 
@@ -336,20 +324,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_2djel"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7n33i"]
 render_priority = 0
-shader = SubResource("Shader_qyhkc")
+shader = SubResource("Shader_gq7d0")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_0jifw"]
+[sub_resource type="QuadMesh" id="QuadMesh_ma225"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_2djel")
+material = SubResource("ShaderMaterial_7n33i")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_t6ytf"]
+[sub_resource type="Shader" id="Shader_r8thm"]
 code = "shader_type spatial;
 
 
@@ -392,17 +380,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_37rwe"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qmicp"]
 render_priority = 0
-shader = SubResource("Shader_t6ytf")
+shader = SubResource("Shader_r8thm")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_8virc"]
+[sub_resource type="QuadMesh" id="QuadMesh_5bd3l"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_37rwe")
+material = SubResource("ShaderMaterial_qmicp")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -467,6 +455,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
+	print(dirTest ,\"  ;  \", get_parent().dirTest)
 	if Input.get_axis(\"punch_left\",\"punch_right\")!=0 or Input.get_axis(\"punch_up\",\"punch_down\")!=0:
 		if get_parent().ip:
 			dirUD =\"s\"
@@ -603,6 +592,9 @@ StaminaRegen = 0.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000183105, 0.482114, 0)
 shape = SubResource("CylinderShape3D_s4q1b")
 
+[node name="ControleModule" type="Node3D" parent="Player"]
+script = ExtResource("3_lsjio")
+
 [node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="Player"]
 transform = Transform3D(1.00276, 0, 0, 0, 1.00276, 0, 0, 0, 0.0523091, 0, 0.482553, 0)
 cast_shadow = 0
@@ -619,7 +611,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_0jifw")
+mesh = SubResource("QuadMesh_ma225")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -629,7 +621,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_8virc")
+mesh = SubResource("QuadMesh_5bd3l")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
