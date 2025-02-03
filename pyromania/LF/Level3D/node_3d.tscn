@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://cehvjck3c6fxw"]
+[gd_scene load_steps=37 format=3 uid="uid://cehvjck3c6fxw"]
 
 [ext_resource type="Texture2D" uid="uid://cxup38cuyaqma" path="res://Рисую/chars/characterD.png" id="1_kfv6r"]
 [ext_resource type="Texture2D" uid="uid://cusekmgew550n" path="res://Рисую/тэст/MMFBG.png" id="1_ndugl"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://LF/Level3D/controle_module.gd" id="3_lsjio"]
 [ext_resource type="Texture2D" uid="uid://dj4v0yqvg1nif" path="res://Рисую/тэст/CloseBG.png" id="4_q1gdx"]
 [ext_resource type="PackedScene" uid="uid://chy8tm6hvummq" path="res://addons/progress_bar_3d/progress_bar_3d.tscn" id="5_x6xwp"]
+[ext_resource type="Script" path="res://LF/Level3D/area_3d.gd" id="7_wmv56"]
 
 [sub_resource type="GDScript" id="GDScript_1vqy0"]
 script/source = "extends Camera3D
@@ -431,7 +432,6 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	
-	print(get_parent().brain.PunchDirTest ,\"  ;  \", get_parent().dirTest)
 	if get_parent().brain.PunchDirTest !=Vector2.ZERO:
 		if (get_parent().brain.PunchDirTest == get_parent().dirTest):
 			if PunchCoolDownTimer.is_stopped():
@@ -478,6 +478,19 @@ size = Vector3(0.599121, 0.605957, 0.611816)
 
 [sub_resource type="BoxMesh" id="BoxMesh_g6sqv"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_wcbs8"]
+size = Vector3(1.25879, 1, 1)
+
+[sub_resource type="GDScript" id="GDScript_miv23"]
+script/source = "extends Timer
+
+func _physics_process(delta: float) -> void:
+	pass
+
+func _on_timeout():
+	print(\"Таймер завершился для: \", get_parent().name)
+"
+
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0421753, -0.010437, -0.0137939)
 
@@ -514,7 +527,7 @@ skeleton = NodePath("../StaticBody3D/CollisionShape3D")
 transform = Transform3D(0.18275, 0, 0, 0, -0.071409, 0.965908, 0, -0.266427, -0.258886, -0.136845, 0.763893, 0.244694)
 
 [node name="Player" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0699842, 0.627747, -1.00299)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0691297, 0.627747, -1.86462)
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 mass = 10.0
@@ -616,3 +629,16 @@ shape = SubResource("BoxShape3D_dm036")
 transform = Transform3D(0.590926, 0, 0, 0, 0.586151, 0, 0, 0, 0.585119, 0.200982, -0.1955, 0.0639487)
 ignore_occlusion_culling = true
 mesh = SubResource("BoxMesh_g6sqv")
+
+[node name="Area3D" type="Area3D" parent="RigidBody3D2"]
+script = ExtResource("7_wmv56")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2/Area3D"]
+transform = Transform3D(1.29766, 0, 0, 0, 1, 0, 0, 0, 1.44484, 0.16791, 0, 0.0597887)
+shape = SubResource("BoxShape3D_wcbs8")
+
+[node name="Timer" type="Timer" parent="RigidBody3D2/Area3D"]
+one_shot = true
+script = SubResource("GDScript_miv23")
+
+[connection signal="timeout" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_timeout"]
