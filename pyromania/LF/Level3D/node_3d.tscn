@@ -157,25 +157,9 @@ func _physics_process(delta: float) -> void:
 		elif Input.get_axis(\"pl\",\"pr\") <0:
 			dirTest.x = 1
 	else:
-		if Input.get_axis(\"move_left\",\"move_right\")!=0 or Input.get_axis(\"move_up\",\"move_down\")!=0:
-			if Input.get_axis(\"move_left\",\"move_right\") >0:
-				dirTest.x = 1
-				if Input.get_axis(\"move_up\",\"move_down\") ==0:
-					dirTest.y=0
-			elif Input.get_axis(\"move_left\",\"move_right\") <0:
-				dirTest.x = -1
-				if Input.get_axis(\"move_up\",\"move_down\") ==0:
-					dirTest.y=0
-				
+		if brain.dirTest != Vector2.ZERO:
+			dirTest = brain.dirTest
 			
-			if Input.get_axis(\"move_up\",\"move_down\") >0:
-				dirTest.y=-1
-				if Input.get_axis(\"move_left\",\"move_right\") ==0:
-					dirTest.x =0
-			elif Input.get_axis(\"move_up\",\"move_down\") <0:
-				dirTest.y=1
-				if Input.get_axis(\"move_left\",\"move_right\") ==0:
-					dirTest.x =0
 				
 		
 func _process(delta):
@@ -280,7 +264,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_0xc1y"]
+[sub_resource type="Shader" id="Shader_qbmcg"]
 code = "shader_type spatial;
 
 
@@ -323,20 +307,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gtec"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ytprv"]
 render_priority = 0
-shader = SubResource("Shader_0xc1y")
+shader = SubResource("Shader_qbmcg")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_glv3t"]
+[sub_resource type="QuadMesh" id="QuadMesh_mmhqo"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_8gtec")
+material = SubResource("ShaderMaterial_ytprv")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_m2vm7"]
+[sub_resource type="Shader" id="Shader_o4ek6"]
 code = "shader_type spatial;
 
 
@@ -379,17 +363,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kgp8u"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yohwn"]
 render_priority = 0
-shader = SubResource("Shader_m2vm7")
+shader = SubResource("Shader_o4ek6")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_h14fy"]
+[sub_resource type="QuadMesh" id="QuadMesh_2ramd"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_kgp8u")
+material = SubResource("ShaderMaterial_yohwn")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -442,7 +426,7 @@ var ComboState =\"\"
 @export var RightPunchHealtDamageModifierNES: float = 0.1
 @export var RightPunchPowerModifierNES: float = 0.1
 
-var dirTest: Vector2 = Vector2(1,1)
+
 var tm = 0
 var sdm = 0
 var hdm = 0
@@ -454,48 +438,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
-	print(dirTest ,\"  ;  \", get_parent().dirTest)
-	if Input.get_axis(\"punch_left\",\"punch_right\")!=0 or Input.get_axis(\"punch_up\",\"punch_down\")!=0:
-		if get_parent().ip:
-			dirUD =\"s\"
-			if Input.get_axis(\"punch_pl\",\"punch_pr\") >0:
-				dirLR=\"r\"
-			elif Input.get_axis(\"punch_pl\",\"punch_pr\") <0:
-				dirLR =\"l\"
-		else:
-			if Input.get_axis(\"punch_left\",\"punch_right\")!=0 or Input.get_axis(\"punch_up\",\"punch_down\")!=0:
-				if Input.get_axis(\"punch_left\",\"punch_right\") >0:
-					dirLR=\"r\"
-					dirTest.x = 1
-					if Input.get_axis(\"punch_up\",\"punch_down\") ==0:
-						dirTest.y=0
-				elif Input.get_axis(\"punch_left\",\"punch_right\") <0:
-					dirLR =\"l\"
-					dirTest.x = -1
-					if Input.get_axis(\"punch_up\",\"punch_down\") ==0:
-						dirTest.y=0
-				else:
-					dirLR=\"s\"
-					dirTest.x = 0
-		
-				if Input.get_axis(\"punch_up\",\"punch_down\") >0:
-					dirUD=\"d\"
-					dirTest.y = -1
-					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
-						dirTest.x = 0
-				elif Input.get_axis(\"punch_up\",\"punch_down\") <0:
-					dirUD =\"u\"
-					dirTest.y = 1
-					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
-						dirTest.x = 0
-				else:
-					dirUD=\"s\"
-					dirTest.y = 0
-	else:
-		dirLR = \"o\"
-		dirUD = \"o\"
-	if Input.is_action_pressed(\"punch_up\") or Input.is_action_pressed(\"punch_down\") or Input.is_action_pressed(\"punch_left\") or Input.is_action_pressed(\"punch_right\"):
-		if (dirTest == get_parent().dirTest and dirTest!=Vector2.ZERO):
+	
+	print(get_parent().brain.PunchDirTest ,\"  ;  \", get_parent().dirTest)
+	if get_parent().brain.PunchDirTest !=Vector2.ZERO:
+		if (get_parent().brain.PunchDirTest == get_parent().dirTest):
 			if PunchCoolDownTimer.is_stopped():
 				var bodies = $AreaF.get_overlapping_bodies()
 				
@@ -516,7 +462,7 @@ func _physics_process(delta: float) -> void:
 					if body.name !=\"Player\" and body is RigidBody3D:
 						body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
 		
-		if dirTest == get_parent().dirTest*-1 and dirTest!=Vector2.ZERO:
+		if get_parent().brain.PunchDirTest == get_parent().dirTest *-1:
 			print(\"BackPunch\")
 	
 	
@@ -610,7 +556,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_glv3t")
+mesh = SubResource("QuadMesh_mmhqo")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -620,7 +566,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_h14fy")
+mesh = SubResource("QuadMesh_2ramd")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0

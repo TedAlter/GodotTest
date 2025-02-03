@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://LF/fl/player_f_2.gd" id="6_54g8l"]
 [ext_resource type="Texture2D" uid="uid://dj4v0yqvg1nif" path="res://Рисую/тэст/CloseBG.png" id="6_ikvs5"]
 [ext_resource type="Texture2D" uid="uid://8sy535fhrj6i" path="res://Рисую/Tiles/Tilemap.png" id="6_segji"]
-[ext_resource type="Texture2D" uid="uid://kpsmatf7efv1" path="res://Рисую/chars/character.png" id="6_y44t5"]
+[ext_resource type="Texture2D" uid="uid://b6jndudqqm7wv" path="res://Рисую/chars/character.png" id="6_y44t5"]
 [ext_resource type="Script" path="res://LF/fl/Mobs/CharF/rigid_body_2d.gd" id="7_on7lq"]
 [ext_resource type="Script" path="res://LF/fl/area_2d.gd" id="8_4ovoo"]
 
