@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://cehvjck3c6fxw"]
+[gd_scene load_steps=45 format=3 uid="uid://cehvjck3c6fxw"]
 
 [ext_resource type="Texture2D" uid="uid://cxup38cuyaqma" path="res://Рисую/chars/characterD.png" id="1_kfv6r"]
 [ext_resource type="Texture2D" uid="uid://cusekmgew550n" path="res://Рисую/тэст/MMFBG.png" id="1_ndugl"]
@@ -73,16 +73,20 @@ var velocity : Vector3 = Vector3.ZERO  # Скорость перемещения
 	#global_transform.origin += velocity * delta
 "
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_41kcv"]
+albedo_texture = ExtResource("4_q1gdx")
+
+[sub_resource type="BoxMesh" id="BoxMesh_65ly3"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_1m3g4"]
+vertices = PackedVector3Array(-3.03355, -0.939514, -4.3513, -3.03355, -0.939514, 1.8987, 6.21645, -0.939514, 1.8987, 6.21645, -0.939514, -4.3513)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_rjxgg"]
 size = Vector3(5.50726, 0.998535, 3.66907)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kspna"]
 albedo_texture = ExtResource("1_ndugl")
-
-[sub_resource type="BoxMesh" id="BoxMesh_65ly3"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_41kcv"]
-albedo_texture = ExtResource("4_q1gdx")
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mde32"]
 friction = 0.0
@@ -169,6 +173,43 @@ func _process(delta):
 height = 0.962033
 radius = 0.239075
 
+[sub_resource type="GDScript" id="GDScript_0qoms"]
+script/source = "extends Node3D
+
+
+@export var cont = true
+
+@onready var na: NavigationAgent3D = $NavigationAgent3D
+
+
+
+var mv = \"S\"
+var dirTest: Vector2 = Vector2(0,0)
+var dirplatformer:float=0
+var PunchDirTest: Vector2 = Vector2(0,0)
+var PunchDirplatformer:float=0
+var dir
+var npp
+# Called when the node enters the scene tree for the first time.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _integrate_forces(state: PhysicsDirectBodyState) -> void:
+func _physics_process(delta: float) -> void:
+	if cont:
+		na.target_position = $\"../../Player\".global_transform.origin
+		na.target_position = na.target_position
+		var destination = na.get_next_path_position()
+		var local_destination = destination - global_position
+		var direction = local_destination.normalized()
+		npp = na.get_next_path_position()
+		dir = npp - global_transform.origin
+		dirTest = Vector2(dir.x , dir.z).normalized()
+
+
+func _on_ready():
+	pass
+"
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_l3wug"]
 atlas = ExtResource("1_tv438")
 region = Rect2(0, 192, 48, 96)
@@ -223,7 +264,7 @@ animations = [{
 [sub_resource type="GDScript" id="GDScript_q2eei"]
 script/source = "extends AnimatedSprite3D
 
-@onready var camera = $\"../../Camera3D\"  # Убедитесь, что путь к камере указан корректно
+@onready var camera = $\"../../../Camera3D\"  # Убедитесь, что путь к камере указан корректно
 
 var animations = [\"f\", \"r\", \"b\", \"l\"]  # Анимации для сторон света
 var current_animation = \"\"
@@ -258,7 +299,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_eap84"]
+[sub_resource type="Shader" id="Shader_cq5g8"]
 code = "shader_type spatial;
 
 
@@ -301,20 +342,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_klc1y"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5wj08"]
 render_priority = 0
-shader = SubResource("Shader_eap84")
+shader = SubResource("Shader_cq5g8")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_qpoh5"]
+[sub_resource type="QuadMesh" id="QuadMesh_m71rs"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_klc1y")
+material = SubResource("ShaderMaterial_5wj08")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_t13y5"]
+[sub_resource type="Shader" id="Shader_mgiib"]
 code = "shader_type spatial;
 
 
@@ -357,17 +398,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_11rpp"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0mjlp"]
 render_priority = 0
-shader = SubResource("Shader_t13y5")
+shader = SubResource("Shader_mgiib")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_g7hb1"]
+[sub_resource type="QuadMesh" id="QuadMesh_r0pv3"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_11rpp")
+material = SubResource("ShaderMaterial_0mjlp")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -498,6 +539,118 @@ func _on_ready():
 		get_parent().cSPEED = get_parent().SPEED * applymod
 "
 
+[sub_resource type="Shader" id="Shader_jes4n"]
+code = "shader_type spatial;
+
+
+// WARNING:
+// if the following render_mode line is removed or altered
+// the script progress_bar_3d.gd will no longer be able to
+// update the shader in memory to turn these off.  See
+// function progress_bar_3d.gd:_update_shader()
+render_mode unshaded, shadows_disabled, depth_test_disabled;
+
+
+uniform vec4 background_color : source_color = vec4(.0,.0,.0,1.);
+uniform vec4 progress_color : source_color = vec4(.0,1.,.0,1.);
+uniform float progress_value : hint_range(0.0, 1.0, 0.01) = .5;
+uniform int billboard_mode = 1;
+
+
+void vertex() {
+	//enabled
+	if(billboard_mode == 1) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	//fixed y
+	} else if(billboard_mode == 2) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(vec4(normalize(cross(vec3(0.0, 1.0, 0.0), INV_VIEW_MATRIX[2].xyz)), 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0), MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	}
+}
+
+
+void fragment() {
+	vec2 border = vec2(0.01, 0.1);
+
+	vec2 mask2 = step(border, UV) * step(UV, 1.0-border);
+    float mask = mask2.x*mask2.y;
+
+    float blend = ((UV.x - progress_value) <= 0.0 ? 1.0 : 0.0) * mask;
+    vec4 fragColor = progress_color*blend + background_color*(1.0-blend);
+	ALBEDO = fragColor.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pj6oy"]
+render_priority = 0
+shader = SubResource("Shader_jes4n")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/progress_color = Color(0, 1, 0, 1)
+shader_parameter/progress_value = 0.5
+shader_parameter/billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_vnfmy"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_pj6oy")
+size = Vector2(1, 0.1)
+
+[sub_resource type="Shader" id="Shader_odyhg"]
+code = "shader_type spatial;
+
+
+// WARNING:
+// if the following render_mode line is removed or altered
+// the script progress_bar_3d.gd will no longer be able to
+// update the shader in memory to turn these off.  See
+// function progress_bar_3d.gd:_update_shader()
+render_mode unshaded, shadows_disabled, depth_test_disabled;
+
+
+uniform vec4 background_color : source_color = vec4(.0,.0,.0,1.);
+uniform vec4 progress_color : source_color = vec4(.0,1.,.0,1.);
+uniform float progress_value : hint_range(0.0, 1.0, 0.01) = .5;
+uniform int billboard_mode = 1;
+
+
+void vertex() {
+	//enabled
+	if(billboard_mode == 1) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	//fixed y
+	} else if(billboard_mode == 2) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(vec4(normalize(cross(vec3(0.0, 1.0, 0.0), INV_VIEW_MATRIX[2].xyz)), 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0), MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	}
+}
+
+
+void fragment() {
+	vec2 border = vec2(0.01, 0.1);
+
+	vec2 mask2 = step(border, UV) * step(UV, 1.0-border);
+    float mask = mask2.x*mask2.y;
+
+    float blend = ((UV.x - progress_value) <= 0.0 ? 1.0 : 0.0) * mask;
+    vec4 fragColor = progress_color*blend + background_color*(1.0-blend);
+	ALBEDO = fragColor.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sl3dy"]
+render_priority = 0
+shader = SubResource("Shader_odyhg")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/progress_color = Color(0, 1, 1, 1)
+shader_parameter/progress_value = 0.5
+shader_parameter/billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_wx86j"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_sl3dy")
+size = Vector2(1, 0.1)
+
 [node name="Node3D" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0421753, -0.010437, -0.0137939)
 
@@ -509,17 +662,6 @@ near = 10.0
 script = SubResource("GDScript_1vqy0")
 move_speed = 2.0
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.838043, 0.000732422, -0.610779)
-shape = SubResource("BoxShape3D_rjxgg")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/CollisionShape3D"]
-transform = Transform3D(5.47195, 0, 0, 0, 1, 0, 0, 0, 3.62541, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_kspna")
-mesh = SubResource("BoxMesh_65ly3")
-
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6004, 0)
 
@@ -528,13 +670,29 @@ transform = Transform3D(5.47195, 0, 0, 0, -4.37114e-08, -3.62541, 0, 1, -1.58472
 material_override = SubResource("StandardMaterial3D_41kcv")
 cast_shadow = 0
 mesh = SubResource("BoxMesh_65ly3")
-skeleton = NodePath("../StaticBody3D/CollisionShape3D")
+skeleton = NodePath("../NavigationRegion3D/StaticBody3D/CollisionShape3D")
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="MeshInstance3D2"]
 transform = Transform3D(0.18275, 0, 0, 0, -0.071409, 0.965908, 0, -0.266427, -0.258886, -0.136845, 0.763893, 0.244694)
 
-[node name="Player" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0691297, 0.627747, -1.86462)
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.94025, 0)
+navigation_mesh = SubResource("NavigationMesh_1m3g4")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1.86179, 0, 0, 0, 1, 0, 0, 0, 2.00179, 0, -1.94025, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.838043, 0.000732422, -0.610779)
+shape = SubResource("BoxShape3D_rjxgg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D/CollisionShape3D"]
+transform = Transform3D(5.47195, 0, 0, 0, 1, 0, 0, 0, 3.62541, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_kspna")
+mesh = SubResource("BoxMesh_65ly3")
+
+[node name="Player2" type="RigidBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8011, -1.19365, -1.79541)
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 mass = 10.0
@@ -542,17 +700,25 @@ physics_material_override = SubResource("PhysicsMaterial_mde32")
 center_of_mass_mode = 1
 linear_damp = 1.0
 script = SubResource("GDScript_0uh00")
-SPEED = 4.0
+SPEED = 1.0
 StaminaRegen = 0.5
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="Player"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="NavigationRegion3D/Player2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000183105, 0.482114, 0)
 shape = SubResource("CylinderShape3D_s4q1b")
 
-[node name="ControleModule" type="Node3D" parent="Player"]
-script = ExtResource("3_lsjio")
+[node name="ControleModule" type="Node3D" parent="NavigationRegion3D/Player2"]
+script = SubResource("GDScript_0qoms")
 
-[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="Player"]
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="NavigationRegion3D/Player2/ControleModule"]
+target_desired_distance = 2.73
+avoidance_enabled = true
+height = 2.73
+radius = 1.66
+use_3d_avoidance = true
+debug_enabled = true
+
+[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="NavigationRegion3D/Player2"]
 transform = Transform3D(1.00276, 0, 0, 0, 1.00276, 0, 0, 0, 0.0523091, 0, 0.482553, 0)
 cast_shadow = 0
 billboard = 2
@@ -564,91 +730,187 @@ sprite_frames = SubResource("SpriteFrames_s88am")
 animation = &"f"
 script = SubResource("GDScript_q2eei")
 
-[node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
+[node name="Health" parent="NavigationRegion3D/Player2" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_qpoh5")
-skeleton = NodePath("../..")
+mesh = SubResource("QuadMesh_m71rs")
+skeleton = NodePath("../../..")
 value = 50.0
 min_value = 0.0
 max_value = 100.0
 background_color = Color(0, 0, 0, 1)
 progress_color = Color(0, 1, 0, 1)
 
-[node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
+[node name="Stamina" parent="NavigationRegion3D/Player2" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_g7hb1")
-skeleton = NodePath("../..")
+mesh = SubResource("QuadMesh_r0pv3")
+skeleton = NodePath("../../..")
 value = 50.0
 min_value = 0.0
 max_value = 100.0
 background_color = Color(0, 0, 0, 1)
 progress_color = Color(0, 1, 1, 1)
 
-[node name="AttakBase" type="Node3D" parent="Player"]
+[node name="AttakBase" type="Node3D" parent="NavigationRegion3D/Player2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.502577, 0)
 script = SubResource("GDScript_kfutj")
 FrontPunchPowerModifier = 10.0
 FrontPunchPowerModifierNES = 5.0
 
-[node name="AreaF" type="Area3D" parent="Player/AttakBase"]
+[node name="AreaF" type="Area3D" parent="NavigationRegion3D/Player2/AttakBase"]
 
-[node name="f" type="CollisionShape3D" parent="Player/AttakBase/AreaF"]
+[node name="f" type="CollisionShape3D" parent="NavigationRegion3D/Player2/AttakBase/AreaF"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00012207, -0.0194092, 0.281822)
 shape = SubResource("BoxShape3D_s1wsm")
 
-[node name="AreaB" type="Area3D" parent="Player/AttakBase"]
+[node name="AreaB" type="Area3D" parent="NavigationRegion3D/Player2/AttakBase"]
 
-[node name="b" type="CollisionShape3D" parent="Player/AttakBase/AreaB"]
+[node name="b" type="CollisionShape3D" parent="NavigationRegion3D/Player2/AttakBase/AreaB"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.000122054, -0.0194702, -0.182116)
 shape = SubResource("BoxShape3D_taeyn")
 
-[node name="AreaR" type="Area3D" parent="Player/AttakBase"]
+[node name="AreaR" type="Area3D" parent="NavigationRegion3D/Player2/AttakBase"]
 
-[node name="s" type="CollisionShape3D" parent="Player/AttakBase/AreaR"]
+[node name="s" type="CollisionShape3D" parent="NavigationRegion3D/Player2/AttakBase/AreaR"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.169073, -0.0189819, -0.00012207)
 shape = SubResource("BoxShape3D_6dgf5")
 
-[node name="AreaL" type="Area3D" parent="Player/AttakBase"]
+[node name="AreaL" type="Area3D" parent="NavigationRegion3D/Player2/AttakBase"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 
-[node name="s" type="CollisionShape3D" parent="Player/AttakBase/AreaL"]
+[node name="s" type="CollisionShape3D" parent="NavigationRegion3D/Player2/AttakBase/AreaL"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.163769, -0.0189819, 1.52588e-05)
 shape = SubResource("BoxShape3D_6dgf5")
 
-[node name="PunchCoolDownTimer" type="Timer" parent="Player/AttakBase"]
+[node name="PunchCoolDownTimer" type="Timer" parent="NavigationRegion3D/Player2/AttakBase"]
 one_shot = true
 
-[node name="ComboHold" type="Timer" parent="Player/AttakBase"]
+[node name="ComboHold" type="Timer" parent="NavigationRegion3D/Player2/AttakBase"]
 
-[node name="RigidBody3D2" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1389, 0.204533)
+[node name="RigidBody3D2" type="RigidBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.10811, -0.6825, -1.62325)
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
 mass = 2.768
 physics_material_override = SubResource("PhysicsMaterial_adlkm")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/RigidBody3D2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200439, -0.197021, 0.0534668)
 shape = SubResource("BoxShape3D_dm036")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/RigidBody3D2"]
 transform = Transform3D(0.590926, 0, 0, 0, 0.586151, 0, 0, 0, 0.585119, 0.200982, -0.1955, 0.0639487)
 ignore_occlusion_culling = true
 mesh = SubResource("BoxMesh_g6sqv")
 
-[node name="Area3D" type="Area3D" parent="RigidBody3D2"]
+[node name="Area3D" type="Area3D" parent="NavigationRegion3D/RigidBody3D2"]
 script = ExtResource("7_wmv56")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/RigidBody3D2/Area3D"]
 transform = Transform3D(1.29766, 0, 0, 0, 1, 0, 0, 0, 1.44484, 0.16791, 0, 0.0597887)
 shape = SubResource("BoxShape3D_wcbs8")
 
-[node name="Timer" type="Timer" parent="RigidBody3D2/Area3D"]
+[node name="Timer" type="Timer" parent="NavigationRegion3D/RigidBody3D2/Area3D"]
 process_callback = 0
 wait_time = 5.0
 one_shot = true
 script = SubResource("GDScript_miv23")
 
-[connection signal="ready" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_ready"]
-[connection signal="timeout" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_timeout"]
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="NavigationRegion3D/RigidBody3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0827734, -0.677704, -0.14284)
+radius = 1.12
+height = 3.23
+affect_navigation_mesh = true
+carve_navigation_mesh = true
+use_3d_avoidance = true
+
+[node name="Player" type="RigidBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.43833, -1.19365, -1.79541)
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+mass = 10.0
+physics_material_override = SubResource("PhysicsMaterial_mde32")
+center_of_mass_mode = 1
+linear_damp = 1.0
+script = SubResource("GDScript_0uh00")
+SPEED = 4.0
+StaminaRegen = 0.5
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="NavigationRegion3D/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000183105, 0.482114, 0)
+shape = SubResource("CylinderShape3D_s4q1b")
+
+[node name="ControleModule" type="Node3D" parent="NavigationRegion3D/Player"]
+script = ExtResource("3_lsjio")
+
+[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="NavigationRegion3D/Player"]
+transform = Transform3D(1.00276, 0, 0, 0, 1.00276, 0, 0, 0, 0.0523091, 0, 0.482553, 0)
+cast_shadow = 0
+billboard = 2
+alpha_cut = 1
+alpha_hash_scale = 2.0
+texture_filter = 0
+render_priority = 1
+sprite_frames = SubResource("SpriteFrames_s88am")
+animation = &"f"
+script = SubResource("GDScript_q2eei")
+
+[node name="Health" parent="NavigationRegion3D/Player" instance=ExtResource("5_x6xwp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
+mesh = SubResource("QuadMesh_vnfmy")
+skeleton = NodePath("../../..")
+value = 50.0
+min_value = 0.0
+max_value = 100.0
+background_color = Color(0, 0, 0, 1)
+progress_color = Color(0, 1, 0, 1)
+
+[node name="Stamina" parent="NavigationRegion3D/Player" instance=ExtResource("5_x6xwp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
+mesh = SubResource("QuadMesh_wx86j")
+skeleton = NodePath("../../..")
+value = 50.0
+min_value = 0.0
+max_value = 100.0
+background_color = Color(0, 0, 0, 1)
+progress_color = Color(0, 1, 1, 1)
+
+[node name="AttakBase" type="Node3D" parent="NavigationRegion3D/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.502577, 0)
+script = SubResource("GDScript_kfutj")
+FrontPunchPowerModifier = 10.0
+FrontPunchPowerModifierNES = 5.0
+
+[node name="AreaF" type="Area3D" parent="NavigationRegion3D/Player/AttakBase"]
+
+[node name="f" type="CollisionShape3D" parent="NavigationRegion3D/Player/AttakBase/AreaF"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00012207, -0.0194092, 0.281822)
+shape = SubResource("BoxShape3D_s1wsm")
+
+[node name="AreaB" type="Area3D" parent="NavigationRegion3D/Player/AttakBase"]
+
+[node name="b" type="CollisionShape3D" parent="NavigationRegion3D/Player/AttakBase/AreaB"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.000122054, -0.0194702, -0.182116)
+shape = SubResource("BoxShape3D_taeyn")
+
+[node name="AreaR" type="Area3D" parent="NavigationRegion3D/Player/AttakBase"]
+
+[node name="s" type="CollisionShape3D" parent="NavigationRegion3D/Player/AttakBase/AreaR"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.169073, -0.0189819, -0.00012207)
+shape = SubResource("BoxShape3D_6dgf5")
+
+[node name="AreaL" type="Area3D" parent="NavigationRegion3D/Player/AttakBase"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="s" type="CollisionShape3D" parent="NavigationRegion3D/Player/AttakBase/AreaL"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.163769, -0.0189819, 1.52588e-05)
+shape = SubResource("BoxShape3D_6dgf5")
+
+[node name="PunchCoolDownTimer" type="Timer" parent="NavigationRegion3D/Player/AttakBase"]
+one_shot = true
+
+[node name="ComboHold" type="Timer" parent="NavigationRegion3D/Player/AttakBase"]
+
+[connection signal="ready" from="NavigationRegion3D/Player2/ControleModule" to="NavigationRegion3D/Player2/ControleModule" method="_on_ready"]
+[connection signal="ready" from="NavigationRegion3D/RigidBody3D2/Area3D/Timer" to="NavigationRegion3D/RigidBody3D2/Area3D/Timer" method="_on_ready"]
+[connection signal="timeout" from="NavigationRegion3D/RigidBody3D2/Area3D/Timer" to="NavigationRegion3D/RigidBody3D2/Area3D/Timer" method="_on_timeout"]

@@ -6,7 +6,6 @@ extends Node3D
 
 var direction="Srd"
 
-@onready var StunTimer: Timer = $StanTimer
 
 var mv = "S"
 var dirTest: Vector2 = Vector2(0,0)
