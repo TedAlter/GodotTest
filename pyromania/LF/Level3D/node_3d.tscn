@@ -100,7 +100,7 @@ script/source = "extends RigidBody3D
 var CurrentStamina = 0
 var CurrentHealth = 0
 var target_angle = 0
-
+var cSPEED = 0
 
 @onready var brain: Node3D = $ControleModule
 
@@ -115,15 +115,16 @@ func _ready():
 	CurrentHealth = MaxHealth
 	$Health.max_value = MaxHealth
 	$Stamina.max_value = stamina
+	cSPEED = SPEED
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _integrate_forces(state: PhysicsDirectBodyState) -> void:
 func _physics_process(delta: float) -> void:
 	if ip:
-		linear_velocity.x = brain.dirplatformer * SPEED
+		linear_velocity.x = brain.dirplatformer * cSPEED
 	elif not ip:
 		nd = brain.dirTest.normalized()
-		linear_velocity.x = nd.x * SPEED
-		linear_velocity.z = nd.y * SPEED
+		linear_velocity.x = nd.x * cSPEED
+		linear_velocity.z = nd.y * cSPEED
 		if nd.length() > 0:
 		# Находим целевой угол, куда должно смотреть тело
 			target_angle = atan2(nd.x, nd.y)
@@ -148,9 +149,9 @@ func _physics_process(delta: float) -> void:
 	
 		
 	
-	if brain.dirTest != Vector2.ZERO and SPEED !=0:
+	if brain.dirTest != Vector2.ZERO and cSPEED !=0:
 		dirTest = brain.dirTest
-	if brain.dirplatformer != 0 and SPEED !=0:
+	if brain.dirplatformer != 0 and cSPEED !=0:
 		dirplatformer = brain.dirplatformer
 			
 				
@@ -257,7 +258,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_dvxfj"]
+[sub_resource type="Shader" id="Shader_eap84"]
 code = "shader_type spatial;
 
 
@@ -300,20 +301,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_yjq36"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_klc1y"]
 render_priority = 0
-shader = SubResource("Shader_dvxfj")
+shader = SubResource("Shader_eap84")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_1m334"]
+[sub_resource type="QuadMesh" id="QuadMesh_qpoh5"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_yjq36")
+material = SubResource("ShaderMaterial_klc1y")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_4bjrb"]
+[sub_resource type="Shader" id="Shader_t13y5"]
 code = "shader_type spatial;
 
 
@@ -356,17 +357,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1ndsl"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_11rpp"]
 render_priority = 0
-shader = SubResource("Shader_4bjrb")
+shader = SubResource("Shader_t13y5")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_26u5j"]
+[sub_resource type="QuadMesh" id="QuadMesh_g7hb1"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_1ndsl")
+material = SubResource("ShaderMaterial_11rpp")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -483,12 +484,18 @@ size = Vector3(1.25879, 1, 1)
 
 [sub_resource type="GDScript" id="GDScript_miv23"]
 script/source = "extends Timer
-
+var applymod: float = 0.5
 func _physics_process(delta: float) -> void:
 	pass
 
 func _on_timeout():
 	print(\"Таймер завершился для: \", get_parent().name)
+	get_parent().cSPEED = get_parent().SPEED
+	queue_free()
+
+func _on_ready():
+	if get_parent().name ==\"Player\":
+		get_parent().cSPEED = get_parent().SPEED * applymod
 "
 
 [node name="Node3D" type="Node3D"]
@@ -559,7 +566,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_1m334")
+mesh = SubResource("QuadMesh_qpoh5")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -569,7 +576,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_26u5j")
+mesh = SubResource("QuadMesh_g7hb1")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -638,7 +645,10 @@ transform = Transform3D(1.29766, 0, 0, 0, 1, 0, 0, 0, 1.44484, 0.16791, 0, 0.059
 shape = SubResource("BoxShape3D_wcbs8")
 
 [node name="Timer" type="Timer" parent="RigidBody3D2/Area3D"]
+process_callback = 0
+wait_time = 5.0
 one_shot = true
 script = SubResource("GDScript_miv23")
 
+[connection signal="ready" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_ready"]
 [connection signal="timeout" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_timeout"]
