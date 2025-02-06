@@ -1,0 +1,541 @@
+[gd_scene load_steps=22 format=3 uid="uid://ca5ynkov4e8nm"]
+
+[ext_resource type="Texture2D" uid="uid://b6jndudqqm7wv" path="res://Рисую/chars/character.png" id="1_8qlg1"]
+[ext_resource type="Texture2D" uid="uid://cxup38cuyaqma" path="res://Рисую/chars/characterD.png" id="1_dfwvf"]
+[ext_resource type="PackedScene" uid="uid://chy8tm6hvummq" path="res://addons/progress_bar_3d/progress_bar_3d.tscn" id="3_e1c47"]
+
+[sub_resource type="GDScript" id="GDScript_0uh00"]
+script/source = "extends RigidBody3D
+
+
+@export var Force:float = 80.0
+@export var SPEED:float = 80.0
+@export var ip: bool = false
+@export var cont = true
+@export var MaxHealth: float = 10
+@export var HealEffect: float = 1
+@export var stamina: float = 10
+@export var StaminaRegen:float = 1
+var is_stuned = false
+var CurrentStamina = 0
+var CurrentHealth = 0
+var direction=\"Srd\"
+var target_angle = 0
+
+
+@onready var StunTimer: Timer = $StanTimer
+
+var nd = Vector2.ZERO
+var ndr = Vector2.ZERO
+var mv = \"S\"
+var dirLR = \"r\"
+var dirUD = \"d\"
+var dirTest: Vector2 = Vector2(1,1)
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	CurrentStamina = stamina
+	CurrentHealth = MaxHealth
+	$Health.max_value = MaxHealth
+	$Stamina.max_value = stamina
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _integrate_forces(state: PhysicsDirectBodyState) -> void:
+func _physics_process(delta: float) -> void:
+	if cont and ip:
+		linear_velocity.x = Input.get_axis(\"pl\",\"pr\") * SPEED
+	elif cont and not ip:
+		nd = Vector2(Input.get_axis(\"move_left\",\"move_right\"),Input.get_axis(\"move_up\",\"move_down\")).normalized()
+		linear_velocity.x = nd.x * SPEED
+		linear_velocity.z = nd.y * SPEED
+		if nd.length() > 0:
+		# Находим целевой угол, куда должно смотреть тело
+			target_angle = atan2(nd.x, nd.y)
+		# Устанавливаем новый поворот вокруг оси Y
+		var new_rotation = rotation_degrees
+		new_rotation.y = rad_to_deg(target_angle)  # rad2deg, чтобы преобразовать угол в градусы
+		rotation_degrees = new_rotation
+	
+	$Health.value = CurrentHealth
+	$Stamina.value = CurrentStamina
+	
+	if nd !=Vector2.ZERO:
+		ndr=nd
+		
+	if CurrentHealth > MaxHealth:
+		CurrentHealth=MaxHealth
+		
+	CurrentStamina = move_toward(CurrentStamina, stamina, StaminaRegen*delta)
+	if CurrentStamina > stamina:
+		CurrentStamina=stamina
+	
+	if CurrentStamina <0:
+		is_stuned = true
+	else:
+		is_stuned = false
+		
+	if cont:
+		mv=\"W\"
+		if ip:
+			dirUD =\"s\"
+			if Input.get_axis(\"pl\",\"pr\") >0:
+				dirLR=\"r\"
+			elif Input.get_axis(\"pl\",\"pr\") <0:
+				dirLR =\"l\"
+		else:
+			if Input.get_axis(\"move_left\",\"move_right\")!=0 or Input.get_axis(\"move_up\",\"move_down\")!=0:
+				if Input.get_axis(\"move_left\",\"move_right\") >0:
+					dirLR=\"r\"
+					dirTest.x = 1
+					if Input.get_axis(\"move_up\",\"move_down\") ==0:
+						dirTest.y=0
+				elif Input.get_axis(\"move_left\",\"move_right\") <0:
+					dirLR =\"l\"
+					dirTest.x = -1
+					if Input.get_axis(\"move_up\",\"move_down\") ==0:
+						dirTest.y=0
+				
+			
+				if Input.get_axis(\"move_up\",\"move_down\") >0:
+					dirUD=\"d\"
+					dirTest.y=1
+					if Input.get_axis(\"move_left\",\"move_right\") ==0:
+						dirTest.x =0
+				elif Input.get_axis(\"move_up\",\"move_down\") <0:
+					dirUD =\"u\"
+					dirTest.y=-1
+					if Input.get_axis(\"move_left\",\"move_right\") ==0:
+						dirTest.x =0
+				
+		
+	else:
+		mv=\"S\"
+	direction = mv+dirLR+dirUD
+func _process(delta):
+	pass
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+
+		
+	
+"
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_jtsqs"]
+height = 0.962033
+radius = 0.239075
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l3wug"]
+atlas = ExtResource("1_8qlg1")
+region = Rect2(0, 192, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aammv"]
+atlas = ExtResource("1_dfwvf")
+region = Rect2(0, 0, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xebhi"]
+atlas = ExtResource("1_8qlg1")
+region = Rect2(0, 96, 48, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5um3a"]
+atlas = ExtResource("1_8qlg1")
+region = Rect2(0, 288, 48, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ulyi5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l3wug")
+}],
+"loop": true,
+"name": &"b",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aammv")
+}],
+"loop": true,
+"name": &"f",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xebhi")
+}],
+"loop": true,
+"name": &"l",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5um3a")
+}],
+"loop": true,
+"name": &"r",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_q0kvp"]
+script/source = "extends AnimatedSprite3D
+
+@onready var camera = $\"../../Camera3D\"  # Убедитесь, что путь к камере указан корректно
+
+var animations = [\"f\", \"r\", \"b\", \"l\"]  # Анимации для сторон света
+var current_animation = \"\"
+
+func _process(delta):
+	# Получаем вектор от объекта к камере в глобальных координатах
+	var to_camera_global = (camera.global_transform.origin - global_transform.origin).normalized()
+	
+	# Преобразуем вектор из глобальных в локальные координаты
+	var to_camera_local = to_local(camera.global_transform.origin).normalized()
+
+	# Вычисляем угол относительно локального \"вперед\" (оси Z)
+	var forward_local = Vector3(0, 0, -1)
+	var angle = rad_to_deg(atan2(to_camera_local.x, to_camera_local.z))
+	
+	angle = wrapf(angle, 0, 360)  # Нормализуем угол от 0 до 360
+	# Определяем нужную анимацию
+	var new_animation = \"\"
+	if angle >= 2.5 and angle < 177:
+		new_animation = \"r\"  # Справа
+	elif angle >= 177 and angle < 183:
+		new_animation = \"b\"  # Сзади
+	elif angle >= 183 and angle < 357:
+		new_animation = \"l\"  # Слева
+	else:
+		new_animation = \"f\"  # Спереди
+
+	# Переключаем анимацию, если она изменилась
+	if new_animation != current_animation:
+		current_animation = new_animation
+		animation = current_animation
+		play()
+"
+
+[sub_resource type="Shader" id="Shader_6kle7"]
+code = "shader_type spatial;
+
+
+// WARNING:
+// if the following render_mode line is removed or altered
+// the script progress_bar_3d.gd will no longer be able to
+// update the shader in memory to turn these off.  See
+// function progress_bar_3d.gd:_update_shader()
+render_mode unshaded, shadows_disabled, depth_test_disabled;
+
+
+uniform vec4 background_color : source_color = vec4(.0,.0,.0,1.);
+uniform vec4 progress_color : source_color = vec4(.0,1.,.0,1.);
+uniform float progress_value : hint_range(0.0, 1.0, 0.01) = .5;
+uniform int billboard_mode = 1;
+
+
+void vertex() {
+	//enabled
+	if(billboard_mode == 1) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	//fixed y
+	} else if(billboard_mode == 2) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(vec4(normalize(cross(vec3(0.0, 1.0, 0.0), INV_VIEW_MATRIX[2].xyz)), 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0), MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	}
+}
+
+
+void fragment() {
+	vec2 border = vec2(0.01, 0.1);
+
+	vec2 mask2 = step(border, UV) * step(UV, 1.0-border);
+    float mask = mask2.x*mask2.y;
+
+    float blend = ((UV.x - progress_value) <= 0.0 ? 1.0 : 0.0) * mask;
+    vec4 fragColor = progress_color*blend + background_color*(1.0-blend);
+	ALBEDO = fragColor.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dhe6"]
+render_priority = 0
+shader = SubResource("Shader_6kle7")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/progress_color = Color(0, 1, 0, 1)
+shader_parameter/progress_value = 0.5
+shader_parameter/billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_o8lt5"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_2dhe6")
+size = Vector2(1, 0.1)
+
+[sub_resource type="Shader" id="Shader_wfxrd"]
+code = "shader_type spatial;
+
+
+// WARNING:
+// if the following render_mode line is removed or altered
+// the script progress_bar_3d.gd will no longer be able to
+// update the shader in memory to turn these off.  See
+// function progress_bar_3d.gd:_update_shader()
+render_mode unshaded, shadows_disabled, depth_test_disabled;
+
+
+uniform vec4 background_color : source_color = vec4(.0,.0,.0,1.);
+uniform vec4 progress_color : source_color = vec4(.0,1.,.0,1.);
+uniform float progress_value : hint_range(0.0, 1.0, 0.01) = .5;
+uniform int billboard_mode = 1;
+
+
+void vertex() {
+	//enabled
+	if(billboard_mode == 1) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	//fixed y
+	} else if(billboard_mode == 2) {
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(vec4(normalize(cross(vec3(0.0, 1.0, 0.0), INV_VIEW_MATRIX[2].xyz)), 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(normalize(cross(INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0), MODEL_MATRIX[3]);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
+	}
+}
+
+
+void fragment() {
+	vec2 border = vec2(0.01, 0.1);
+
+	vec2 mask2 = step(border, UV) * step(UV, 1.0-border);
+    float mask = mask2.x*mask2.y;
+
+    float blend = ((UV.x - progress_value) <= 0.0 ? 1.0 : 0.0) * mask;
+    vec4 fragColor = progress_color*blend + background_color*(1.0-blend);
+	ALBEDO = fragColor.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_us5qg"]
+render_priority = 0
+shader = SubResource("Shader_wfxrd")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/progress_color = Color(0, 1, 1, 1)
+shader_parameter/progress_value = 0.5
+shader_parameter/billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_y13ak"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_us5qg")
+size = Vector2(1, 0.1)
+
+[sub_resource type="GDScript" id="GDScript_gkvk4"]
+script/source = "extends Node3D
+@onready var PunchCoolDownTimer: Timer = $PunchCoolDownTimer # Объявляем переменную под таймер
+@export var PunchCoolDownTimer_BaseTime: float = 1
+@onready var ComboHold: Timer = $ComboHold
+
+@onready var dirLR = \"r\"
+@onready var dirUD = \"d\"
+var direction=\"rd\"
+var ComboState =\"\"
+@export var FrontPunchStaminaRequred: float = 1
+@export var FrontPunchTimeMidifier: float = 1
+@export var FrontPunchStaminaDamageModifier: float = 1
+@export var FrontPunchHealtDamageModifier: float = 1
+@export var FrontPunchPowerModifier: float = 1
+@export var FrontPunchTimeMidifierNES: float = 2
+@export var FrontPunchStaminaDamageModifierNES: float = 0.1
+@export var FrontPunchHealtDamageModifierNES: float = 0.1
+@export var FrontPunchPowerModifierNES: float = 0.1
+
+@export var BackPunchStaminaRequred: float = 1
+@export var BackPunchTimeMidifier: float = 1
+@export var BackPunchStaminaDamageModifier: float = 1
+@export var BackPunchHealtDamageModifier: float = 1
+@export var BackPunchPowerModifier: float = 1
+@export var BackPunchTimeMidifierNES: float = 2
+@export var BackPunchStaminaDamageModifierNES: float = 0.1
+@export var BackPunchHealtDamageModifierNES: float = 0.1
+@export var BackPunchPowerModifierNES: float = 0.1
+
+@export var LeftPunchStaminaRequred: float = 1
+@export var LeftPunchTimeMidifier: float = 1
+@export var LeftPunchStaminaDamageModifier: float = 1
+@export var LeftPunchHealtDamageModifier: float = 1
+@export var LeftPunchPowerModifier: float = 1
+@export var LeftPunchTimeMidifierNES: float = 2
+@export var LeftPunchStaminaDamageModifierNES: float = 0.1
+@export var LeftPunchHealtDamageModifierNES: float = 0.1
+@export var LeftPunchPowerModifierNES: float = 0.1
+
+@export var RightPunchStaminaRequred: float = 1
+@export var RightPunchTimeMidifier: float = 1
+@export var RightPunchStaminaDamageModifier: float = 1
+@export var RightPunchHealtDamageModifier: float = 1
+@export var RightPunchPowerModifier: float = 1
+@export var RightPunchTimeMidifierNES: float = 2
+@export var RightPunchStaminaDamageModifierNES: float = 0.1
+@export var RightPunchHealtDamageModifierNES: float = 0.1
+@export var RightPunchPowerModifierNES: float = 0.1
+
+var dirTest: Vector2 = Vector2(1,1)
+var tm = 0
+var sdm = 0
+var hdm = 0
+var pow = 0
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _physics_process(delta: float) -> void:
+	if Input.get_axis(\"punch_left\",\"punch_right\")!=0 or Input.get_axis(\"punch_up\",\"punch_down\")!=0:
+		if get_parent().ip:
+			dirUD =\"s\"
+			if Input.get_axis(\"punch_pl\",\"punch_pr\") >0:
+				dirLR=\"r\"
+			elif Input.get_axis(\"punch_pl\",\"punch_pr\") <0:
+				dirLR =\"l\"
+		else:
+			if Input.get_axis(\"punch_left\",\"punch_right\")!=0 or Input.get_axis(\"punch_up\",\"punch_down\")!=0:
+				if Input.get_axis(\"punch_left\",\"punch_right\") >0:
+					dirLR=\"r\"
+					dirTest.x = 1
+					if Input.get_axis(\"punch_up\",\"punch_down\") ==0:
+						dirTest.y=0
+				elif Input.get_axis(\"punch_left\",\"punch_right\") <0:
+					dirLR =\"l\"
+					dirTest.x = -1
+					if Input.get_axis(\"punch_up\",\"punch_down\") ==0:
+						dirTest.y=0
+				else:
+					dirLR=\"s\"
+					dirTest.x = 0
+		
+				if Input.get_axis(\"punch_up\",\"punch_down\") >0:
+					dirUD=\"d\"
+					dirTest.y = 1
+					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
+						dirTest.x = 0
+				elif Input.get_axis(\"punch_up\",\"punch_down\") <0:
+					dirUD =\"u\"
+					dirTest.y = -1
+					if Input.get_axis(\"punch_left\",\"punch_right\") ==0:
+						dirTest.x = 0
+				else:
+					dirUD=\"s\"
+					dirTest.y = 0
+	else:
+		dirLR = \"o\"
+		dirUD = \"o\"
+	if Input.is_action_pressed(\"punch_up\") or Input.is_action_pressed(\"punch_down\") or Input.is_action_pressed(\"punch_left\") or Input.is_action_pressed(\"punch_right\"):
+		if (dirTest == get_parent().dirTest and dirTest!=Vector2.ZERO):
+			if PunchCoolDownTimer.is_stopped():
+				var bodies = $AreaF.get_overlapping_bodies()
+				
+				if get_parent().CurrentStamina > 0:
+					get_parent().CurrentStamina = get_parent().CurrentStamina - FrontPunchStaminaRequred
+					tm = FrontPunchTimeMidifier
+					sdm = FrontPunchStaminaDamageModifier
+					hdm = FrontPunchHealtDamageModifier
+					pow = FrontPunchPowerModifier
+				else:
+					tm = FrontPunchTimeMidifierNES
+					sdm = FrontPunchStaminaDamageModifierNES
+					hdm = FrontPunchHealtDamageModifierNES
+					pow = FrontPunchPowerModifierNES
+				PunchCoolDownTimer.wait_time = tm * PunchCoolDownTimer_BaseTime
+				PunchCoolDownTimer.start()
+				for body in bodies:
+					if body.name !=\"Player\" and body is RigidBody3D:
+						body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
+		
+		if dirTest == get_parent().dirTest*-1 and dirTest!=Vector2.ZERO:
+			print(\"BackPunch\")
+	
+	
+	
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bhwdh"]
+size = Vector3(0.478271, 0.961182, 0.562973)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w606h"]
+size = Vector3(0.478271, 0.96106, 0.364437)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_664xh"]
+size = Vector3(0.501678, 0.962036, 0.332874)
+
+[node name="RigidBody3D" type="RigidBody3D"]
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+gravity_scale = 0.0
+script = SubResource("GDScript_0uh00")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000183105, 0.482114, 0)
+shape = SubResource("CylinderShape3D_jtsqs")
+
+[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1.00276, 0, 0, 0, 1.00276, 0, 0, 0, 0.0523091, 0, 0.482553, 0)
+cast_shadow = 0
+billboard = 2
+alpha_cut = 1
+alpha_hash_scale = 2.0
+texture_filter = 0
+render_priority = 1
+sprite_frames = SubResource("SpriteFrames_ulyi5")
+animation = &"f"
+script = SubResource("GDScript_q0kvp")
+
+[node name="StanTimer" type="Timer" parent="."]
+
+[node name="Health" parent="." instance=ExtResource("3_e1c47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
+mesh = SubResource("QuadMesh_o8lt5")
+skeleton = NodePath("../..")
+value = 50.0
+min_value = 0.0
+max_value = 100.0
+background_color = Color(0, 0, 0, 1)
+progress_color = Color(0, 1, 0, 1)
+
+[node name="Stamina" parent="." instance=ExtResource("3_e1c47")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
+mesh = SubResource("QuadMesh_y13ak")
+skeleton = NodePath("../..")
+value = 50.0
+min_value = 0.0
+max_value = 100.0
+background_color = Color(0, 0, 0, 1)
+progress_color = Color(0, 1, 1, 1)
+
+[node name="AttakBase" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.502577, 0)
+script = SubResource("GDScript_gkvk4")
+
+[node name="AreaF" type="Area3D" parent="AttakBase"]
+
+[node name="f" type="CollisionShape3D" parent="AttakBase/AreaF"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00012207, -0.0194092, 0.281822)
+shape = SubResource("BoxShape3D_bhwdh")
+
+[node name="AreaB" type="Area3D" parent="AttakBase"]
+
+[node name="b" type="CollisionShape3D" parent="AttakBase/AreaB"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.000122054, -0.0194702, -0.182116)
+shape = SubResource("BoxShape3D_w606h")
+
+[node name="AreaR" type="Area3D" parent="AttakBase"]
+
+[node name="s" type="CollisionShape3D" parent="AttakBase/AreaR"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.169073, -0.0189819, -0.00012207)
+shape = SubResource("BoxShape3D_664xh")
+
+[node name="AreaL" type="Area3D" parent="AttakBase"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="s" type="CollisionShape3D" parent="AttakBase/AreaL"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.163769, -0.0189819, 1.52588e-05)
+shape = SubResource("BoxShape3D_664xh")
+
+[node name="PunchCoolDownTimer" type="Timer" parent="AttakBase"]
+one_shot = true
+
+[node name="ComboHold" type="Timer" parent="AttakBase"]

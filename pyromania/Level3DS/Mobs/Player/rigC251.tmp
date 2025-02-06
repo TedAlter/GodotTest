@@ -1,0 +1,99 @@
+[gd_scene load_steps=6 format=3 uid="uid://ca5ynkov4e8nm"]
+
+[ext_resource type="Texture2D" uid="uid://cxup38cuyaqma" path="res://Рисую/chars/characterD.png" id="1_dfwvf"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_25k6c"]
+size = Vector3(0.478, 0.965, 0.478)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aammv"]
+atlas = ExtResource("1_dfwvf")
+region = Rect2(0, 0, 48, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bqyo0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aammv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_a5ijw"]
+script/source = "extends AnimatedSprite3D
+
+@onready var camera = $Camera3D  # Убедитесь, что камера указана верно
+var directions = [
+	0,          # Вперёд
+	45,         # Вперёд-право
+	90,         # Справа
+	135,        # Назад-право
+	180,        # Назад
+	-135,       # Назад-лево
+	-90,        # Слева
+	-45         # Вперёд-лево
+]
+
+var current_direction = -1
+var current_frame = 0  # Текущий кадр
+
+func _process(delta):
+	# Вектор к камере в глобальных координатах
+	var to_camera_global = (camera.global_transform.origin - global_transform.origin).normalized()
+	# Переводим в локальные координаты объекта
+	var to_camera_local = global_transform.basis.xform_inverse(to_camera_global)
+	
+	# Вычисляем угол между \"вперёд\" (Z-ось в локальных координатах) и вектором к камере
+	var forward_local = Vector3(0, 0, -1)
+	var angle = rad2deg(atan2(to_camera_local.x, to_camera_local.z))
+	angle = wrapf(angle, -180, 180)  # Нормализуем угол от -180 до 180
+	
+	# Выбираем направление
+	var direction_index = int(round(angle / 45)) % 8
+	if direction_index < 0:
+		direction_index += 8
+	
+	# Если направление изменилось, переключаем анимацию
+	if direction_index != current_direction:
+		current_direction = direction_index
+		current_frame = frame  # Сохраняем текущий кадр
+		match current_direction:
+			0:
+				animation = \"forward\"
+			1:
+				animation = \"forward_right\"
+			2:
+				animation = \"right\"
+			3:
+				animation = \"back_right\"
+			4:
+				animation = \"back\"
+			5:
+				animation = \"back_left\"
+			6:
+				animation = \"left\"
+			7:
+				animation = \"forward_left\"
+		play(animation)
+		frame = current_frame  # Устанавливаем сохранённый кадр
+"
+
+[node name="RigidBody3D" type="RigidBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000183105, 0.482114, 0)
+shape = SubResource("BoxShape3D_25k6c")
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 47.8558, 0, 0.482553, 0)
+cast_shadow = 0
+billboard = 2
+no_depth_test = true
+alpha_cut = 1
+alpha_hash_scale = 2.0
+texture_filter = 0
+render_priority = 1
+sprite_frames = SubResource("SpriteFrames_bqyo0")
+frame_progress = 0.88421
+script = SubResource("GDScript_a5ijw")
