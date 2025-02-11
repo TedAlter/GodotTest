@@ -33,11 +33,6 @@ func _physics_process(delta: float) -> void:
 		else:
 			PunchDirTest = Vector2.ZERO
 			PunchDirplatformer = 0
-		
-	
-	
-	
-	
 func _process(delta):
 	pass
 	# Get the input direction and handle the movement/deceleration.

@@ -8,7 +8,6 @@ func _physics_process(delta: float) -> void:
 			var cloned_timer = timer.duplicate()  # Клонируем таймер
 			body.add_child(cloned_timer)  # Добавляем к объекту
 		# Запускаем таймер
-			cloned_timer.start()
 			queue_free()
 
 # Обработчик таймера уже не зависит от зоны
