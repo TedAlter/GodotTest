@@ -320,7 +320,7 @@ func _process(delta):
 		play()
 "
 
-[sub_resource type="Shader" id="Shader_dfpeg"]
+[sub_resource type="Shader" id="Shader_37l1e"]
 code = "shader_type spatial;
 
 
@@ -363,20 +363,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_50254"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7th3k"]
 render_priority = 0
-shader = SubResource("Shader_dfpeg")
+shader = SubResource("Shader_37l1e")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_wnyfb"]
+[sub_resource type="QuadMesh" id="QuadMesh_lu8dx"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_50254")
+material = SubResource("ShaderMaterial_7th3k")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_870ov"]
+[sub_resource type="Shader" id="Shader_jqjoa"]
 code = "shader_type spatial;
 
 
@@ -419,17 +419,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_mj8xg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sc7td"]
 render_priority = 0
-shader = SubResource("Shader_870ov")
+shader = SubResource("Shader_jqjoa")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_k0qq6"]
+[sub_resource type="QuadMesh" id="QuadMesh_skkrv"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_mj8xg")
+material = SubResource("ShaderMaterial_sc7td")
 size = Vector2(1, 0.1)
 
 [sub_resource type="GDScript" id="GDScript_kfutj"]
@@ -491,13 +491,18 @@ var pow = 0
 func _ready():
 	print(\"I Am Ready\")
 
+func compare_directions(main_dir: Vector2, aux_dir: Vector2):
+	main_dir = main_dir.normalized()
+	aux_dir = aux_dir.normalized()
+	var perp_main = Vector2(-main_dir.y, main_dir.x) # Вектор, повернутый на 90°
+	var threshold = 0.707 # cos(45°), определяет допуск 45° в каждую сторону
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta: float) -> void:
-	
-	if get_parent().brain.PunchDirTest !=Vector2.ZERO:
-		if (get_parent().brain.PunchDirTest == get_parent().dirTest):
-			if PunchCoolDownTimer.is_stopped():
+	var dot_product = main_dir.dot(aux_dir)
+	var perp_dot_product = perp_main.dot(aux_dir)
+
+	if dot_product > threshold:
+		print(\"Вспомогательный вектор находится в переднем секторе (±45°)\")
+		if PunchCoolDownTimer.is_stopped():
 				var bodies = $AreaF.get_overlapping_bodies()
 				
 				if get_parent().CurrentStamina > 0:
@@ -517,8 +522,21 @@ func _physics_process(delta: float) -> void:
 					if body.name !=\"Player\" and body is RigidBody3D:
 						body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
 		
-		if get_parent().brain.PunchDirTest == get_parent().dirTest *-1:
-			print(\"BackPunch\")
+	elif dot_product < -threshold:
+		print(\"Вспомогательный вектор находится в заднем секторе (±45°)\")
+		print(\"BackPunch\")
+		
+	elif perp_dot_product > threshold:
+		print(\"Вспомогательный вектор в правом секторе (от +45° до +135°)\")
+	elif perp_dot_product < -threshold:
+		print(\"Вспомогательный вектор в левом секторе (от -45° до -135°)\")
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _physics_process(delta: float) -> void:
+	
+	if get_parent().brain.PunchDirTest !=Vector2.ZERO:
+		compare_directions(get_parent().dirTest,get_parent().brain.PunchDirTest)
+		
 	
 	
 	
@@ -569,7 +587,7 @@ func _physics_process(delta: float) -> void:
 	velocity = get_parent().linear_velocity
 "
 
-[sub_resource type="Shader" id="Shader_8lawu"]
+[sub_resource type="Shader" id="Shader_fdeyq"]
 code = "shader_type spatial;
 
 
@@ -612,20 +630,20 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_shldd"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n2y7a"]
 render_priority = 0
-shader = SubResource("Shader_8lawu")
+shader = SubResource("Shader_fdeyq")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 0, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_60dxh"]
+[sub_resource type="QuadMesh" id="QuadMesh_nx8ja"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_shldd")
+material = SubResource("ShaderMaterial_n2y7a")
 size = Vector2(1, 0.1)
 
-[sub_resource type="Shader" id="Shader_slkek"]
+[sub_resource type="Shader" id="Shader_cpsx8"]
 code = "shader_type spatial;
 
 
@@ -668,17 +686,17 @@ void fragment() {
 }
 "
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ijh8"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vloyk"]
 render_priority = 0
-shader = SubResource("Shader_slkek")
+shader = SubResource("Shader_cpsx8")
 shader_parameter/background_color = Color(0, 0, 0, 1)
 shader_parameter/progress_color = Color(0, 1, 1, 1)
 shader_parameter/progress_value = 0.5
 shader_parameter/billboard_mode = 1
 
-[sub_resource type="QuadMesh" id="QuadMesh_n4g78"]
+[sub_resource type="QuadMesh" id="QuadMesh_yqmtl"]
 resource_local_to_scene = true
-material = SubResource("ShaderMaterial_5ijh8")
+material = SubResource("ShaderMaterial_vloyk")
 size = Vector2(1, 0.1)
 
 [node name="Node3D" type="Node3D"]
@@ -759,7 +777,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="PlayerS" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_wnyfb")
+mesh = SubResource("QuadMesh_lu8dx")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -769,7 +787,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="PlayerS" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_k0qq6")
+mesh = SubResource("QuadMesh_skkrv")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -880,7 +898,7 @@ script = SubResource("GDScript_q2eei")
 
 [node name="Health" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.02289, -0.0300624)
-mesh = SubResource("QuadMesh_60dxh")
+mesh = SubResource("QuadMesh_nx8ja")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0
@@ -890,7 +908,7 @@ progress_color = Color(0, 1, 0, 1)
 
 [node name="Stamina" parent="Player" instance=ExtResource("5_x6xwp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019665, 1.12997, -0.0300624)
-mesh = SubResource("QuadMesh_n4g78")
+mesh = SubResource("QuadMesh_yqmtl")
 skeleton = NodePath("../..")
 value = 50.0
 min_value = 0.0

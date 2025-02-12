@@ -20,7 +20,7 @@ func _physics_process(delta: float) -> void:
 	if cont:
 		if Input.get_axis("move_left","move_right")!=0 or Input.get_axis("move_up","move_down")!=0:
 			mv="W"
-			dirTest = Vector2(Input.get_axis("move_left","move_right"),Input.get_axis("move_up","move_down"))
+			dirTest = Vector2(Input.get_axis("move_left","move_right"),Input.get_axis("move_up","move_down")).normalized()
 			dirplatformer = Input.get_axis("pl","pr")
 		else:
 			mv="S"
@@ -28,7 +28,7 @@ func _physics_process(delta: float) -> void:
 			dirplatformer = 0
 			
 		if Input.get_axis("punch_left","punch_right")!=0 or Input.get_axis("punch_up","punch_down")!=0:
-			PunchDirTest = Vector2(Input.get_axis("punch_left","punch_right"),Input.get_axis("punch_up","punch_down"))
+			PunchDirTest = Vector2(Input.get_axis("punch_left","punch_right"),Input.get_axis("punch_up","punch_down")).normalized()
 			PunchDirplatformer = Input.get_axis("punch_pl","punch_pr")
 		else:
 			PunchDirTest = Vector2.ZERO
