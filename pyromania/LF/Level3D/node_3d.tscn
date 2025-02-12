@@ -491,6 +491,12 @@ var pow = 0
 func _ready():
 	print(\"I Am Ready\")
 
+func set_combo_state (ind: String):
+	ComboHold.stop()
+	ComboState = ind
+	ComboHold.start()
+	
+
 func compare_directions(main_dir: Vector2, aux_dir: Vector2):
 	main_dir = main_dir.normalized()
 	aux_dir = aux_dir.normalized()
@@ -501,30 +507,53 @@ func compare_directions(main_dir: Vector2, aux_dir: Vector2):
 	var perp_dot_product = perp_main.dot(aux_dir)
 
 	if dot_product > threshold:
-		print(\"Вспомогательный вектор находится в переднем секторе (±45°)\")
 		if PunchCoolDownTimer.is_stopped():
-				var bodies = $AreaF.get_overlapping_bodies()
-				
-				if get_parent().CurrentStamina > 0:
-					get_parent().CurrentStamina = get_parent().CurrentStamina - FrontPunchStaminaRequred
-					tm = FrontPunchTimeMidifier
-					sdm = FrontPunchStaminaDamageModifier
-					hdm = FrontPunchHealtDamageModifier
-					pow = FrontPunchPowerModifier
-				else:
-					tm = FrontPunchTimeMidifierNES
-					sdm = FrontPunchStaminaDamageModifierNES
-					hdm = FrontPunchHealtDamageModifierNES
-					pow = FrontPunchPowerModifierNES
-				PunchCoolDownTimer.wait_time = tm * PunchCoolDownTimer_BaseTime
-				PunchCoolDownTimer.start()
-				for body in bodies:
-					if body.name !=\"Player\" and body is RigidBody3D:
-						body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
-		
+			ComboHold.stop()
+			ComboState =\"\"
+			var bodies = $AreaF.get_overlapping_bodies()
+			if get_parent().CurrentStamina > 0:
+				get_parent().CurrentStamina = get_parent().CurrentStamina - FrontPunchStaminaRequred
+				tm = FrontPunchTimeMidifier
+				sdm = FrontPunchStaminaDamageModifier
+				hdm = FrontPunchHealtDamageModifier
+				pow = FrontPunchPowerModifier
+			else:
+				tm = FrontPunchTimeMidifierNES
+				sdm = FrontPunchStaminaDamageModifierNES
+				hdm = FrontPunchHealtDamageModifierNES
+				pow = FrontPunchPowerModifierNES
+			PunchCoolDownTimer.wait_time = tm * PunchCoolDownTimer_BaseTime
+			PunchCoolDownTimer.start()
+			print(\"Вспомогательный вектор находится в переднем секторе (±45°)\")
+			set_combo_state(\"f\")
+			for body in bodies:
+				if body.name !=\"Player\" and body is RigidBody3D:
+					body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
+
 	elif dot_product < -threshold:
-		print(\"Вспомогательный вектор находится в заднем секторе (±45°)\")
-		print(\"BackPunch\")
+		if PunchCoolDownTimer.is_stopped() or ComboState ==\"f\":
+			ComboHold.stop()
+			ComboState =\"\"
+			var bodies = $AreaB.get_overlapping_bodies()
+				
+			if get_parent().CurrentStamina > 0:
+				get_parent().CurrentStamina = get_parent().CurrentStamina - BackPunchStaminaRequred
+				tm = BackPunchTimeMidifier
+				sdm = BackPunchStaminaDamageModifier
+				hdm = BackPunchHealtDamageModifier
+				pow = BackPunchPowerModifier
+			else:
+				tm = BackPunchTimeMidifierNES
+				sdm = BackPunchStaminaDamageModifierNES
+				hdm = BackPunchHealtDamageModifierNES
+				pow = BackPunchPowerModifierNES
+			PunchCoolDownTimer.stop
+			PunchCoolDownTimer.wait_time = tm * PunchCoolDownTimer_BaseTime
+			PunchCoolDownTimer.start()
+			print(\"Вспомогательный вектор находится в заднем секторе (±45°)\")
+			for body in bodies:
+				if body.name !=\"Player\" and body is RigidBody3D:
+					body.apply_central_impulse(Vector3(get_parent().ndr.x, 1, get_parent().ndr.y) * pow)
 		
 	elif perp_dot_product > threshold:
 		print(\"Вспомогательный вектор в правом секторе (от +45° до +135°)\")
@@ -538,8 +567,10 @@ func _physics_process(delta: float) -> void:
 		compare_directions(get_parent().dirTest,get_parent().brain.PunchDirTest)
 		
 	
-	
-	
+
+func _on_combo_hold_timeout():
+	ComboState =\"\"
+	print(\"ComboFailed\")
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_s1wsm"]
@@ -948,10 +979,15 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.163
 shape = SubResource("BoxShape3D_6dgf5")
 
 [node name="PunchCoolDownTimer" type="Timer" parent="Player/AttakBase"]
+process_callback = 0
 one_shot = true
 
 [node name="ComboHold" type="Timer" parent="Player/AttakBase"]
+process_callback = 0
+wait_time = 0.5
+one_shot = true
 
 [connection signal="velocity_computed" from="PlayerS/ControleModule/NavigationAgent3D" to="PlayerS/ControleModule/NavigationAgent3D" method="_on_velocity_computed"]
 [connection signal="ready" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_ready"]
 [connection signal="timeout" from="RigidBody3D2/Area3D/Timer" to="RigidBody3D2/Area3D/Timer" method="_on_timeout"]
+[connection signal="timeout" from="Player/AttakBase/ComboHold" to="PlayerS/AttakBase" method="_on_combo_hold_timeout"]
